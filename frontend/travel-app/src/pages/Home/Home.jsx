@@ -1,0 +1,243 @@
+import React, { useEffect, useState } from 'react'
+import Navbar from '../../components/Navbar'
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../utils/axiosinstance';
+import {MdAdd} from 'react-icons/md';
+import Modal from "react-modal";
+import TravelCard from '../../components/Cards/TravelCard';
+import AddEditTravelStory from './AddEditTravelStory';
+import ViewTravelStory from './ViewTravelStory';
+import { ToastContainer, toast } from 'react-toastify';
+import EmptyCard from '../../components/Cards/EmptyCard';
+import { DayPicker } from 'react-day-picker';
+import moment from 'moment';
+import FilterInfoTitle from '../../components/Cards/FilterInfoTitle';
+import { getEmptyCardImg, getEmptyCardMessage } from '../../utils/helper';
+
+const Home = () => {
+
+  const navigate = useNavigate();
+  const [userInfo,setUserInfo] = useState(null);
+  const [allStories, setAllStories] = useState([]);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [dateRange, setDateRange] = useState({from: null,to :null});
+
+  const[openAddEditModal, setOpenAddEditModal] = useState({
+    isShown: false,
+    type: "add",
+    data: null,
+  });
+
+  const [openViewModal, setOpenViewModal] = useState({
+    isShown: false,
+    data: null,
+  });
+  const getUserInfo = async () => {
+    try{
+      const response = await axiosInstance.get("/get-user");
+      if(response.data && response.data.user){
+          setUserInfo(response.data.user);
+      }
+    } catch(error){
+      if (error.response.status==401) {
+        localStorage.clear();
+        navigate("/login");
+      }
+    }
+  }
+
+  const getAllTravelStories = async () => {
+    try{
+      const response = await axiosInstance.get("/get-all-travels");
+      if (response.data && response.data.details){
+        setAllStories(response.data.details);
+      }
+    } catch(error){
+      console.log("An unexpected error occured. Please try again");
+    }
+  }
+
+  const handleEdit = (data) => {
+    setOpenAddEditModal({ isShown: true, type: "edit", data: data});
+  }
+
+  const handleViewStory = (data) => {
+    setOpenViewModal({isShown: true, data});
+  };
+
+  const deleteTravelStory = async(data) =>{
+    const storyId = data._id;
+
+    try{
+      const response = await axiosInstance.delete("/delete-travel/" + storyId);
+
+      if (response.data && !response.data.error){
+        toast.error("Story Deleted Successfully");
+        setOpenViewModal((prevState) => ({...prevState, isShown:false}));
+        getAllTravelStories();
+      }
+    } catch(error){
+        console.log("An unexpected error occured, Please try again.");
+    }
+  }
+
+  const onSearchStory = async (query) => {
+    try{
+      const response = await axiosInstance.get("/search-travel",{ 
+        params: {
+          query,
+        },
+      });
+
+      if (response.data && response.data.details){
+        setFilterType("search");
+        setAllStories(response.data.details);
+      }
+
+    } catch(error){
+        console.log("An unexpected error occured, Please try again.");
+    }
+  }
+  const handleClearSearch = () => {
+    setFilterType("");
+    getAllTravelStories();
+  }
+
+  const filterStoriesByDate = async (day) => {
+    try{
+      const startDate = day.from ? moment(day.from).valueOf() : null;
+      const endDate = day.to ? moment(day.to).valueOf() : null;
+
+      if (startDate && endDate){
+        const response = await axiosInstance.get("/travel/filter", {
+          params: {startDate, endDate},
+        });
+
+        if (response.data && response.data.details){
+          setFilterType("date");
+          setAllStories(response.data.details);
+        }
+      }
+    } catch(error){
+      console.log("An unexpected error occured, Please try again.");
+    }
+
+  }
+  const handleDayClick = (day) => {
+    setDateRange(day);
+    filterStoriesByDate(day);
+  }
+
+  const resetFilter = () => {
+    setDateRange({from: null, to: null});
+    setFilterType("");
+    getAllTravelStories();
+  }
+  useEffect(() => {
+    getAllTravelStories();
+    getUserInfo();
+    return () => {}
+  },[]);
+
+  return (
+    <>
+      <Navbar userInfo={userInfo} searchQuery={searchQuery}
+      setSearchQuery={setSearchQuery}
+      onSearchNote={onSearchStory}
+      handleClearSearch={handleClearSearch}></Navbar>
+
+      <div className='container mx-auto py-10'>
+        <FilterInfoTitle filterType={filterType}
+        filterDates={dateRange}
+        onClear={()=> {
+          resetFilter();
+        }}>
+        </FilterInfoTitle>
+        <div className='flex gap-7'>
+          <div className='flex-1'>
+          {allStories.length > 0 ? (<div className='grid grid-cols-2 gap-4'>
+            {allStories.map((item)=>{
+              return (
+                <TravelCard key={item._id}
+                imageUrl={item.imageUrl}
+                title={item.title}
+                details={item.details}
+                date={item.dateVisited}
+                locationsVisited={item.locationsVisited}
+                onClick={() => handleViewStory(item)}></TravelCard>
+              )
+            })}
+          </div>):(
+            <EmptyCard imgSrc={getEmptyCardImg(filterType)} 
+            message={getEmptyCardMessage(filterType)}/>
+          )}
+          </div>
+          <div className='w-[350px]'>
+            <div className='bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg'>
+              <div className='p-3'>
+                <DayPicker captionLayout='dropdown-buttons'
+                mode="range"
+                selected={dateRange}
+                onSelect={handleDayClick}
+                pagedNavigation>
+                </DayPicker>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Modal isOpen={openAddEditModal.isShown}
+      onRequestClose={()=>{}}
+      style={{
+        overlay: {
+          backgroundColor: "rgba(0,0,0,0.2)",
+          zIndex: 999,
+        },
+      }}
+      appElement={document.getElementById("root")}
+      className="model-box">
+        <AddEditTravelStory type={openAddEditModal.type}
+        storyInfo={openAddEditModal.data}
+        onClose={()=>{
+          setOpenAddEditModal({ isShown: false, type: "add", data: null});
+        }}
+        getAllTravelStories={getAllTravelStories}></AddEditTravelStory>
+      </Modal>
+
+      <Modal isOpen={openViewModal.isShown}
+      onRequestClose={()=>{}}
+      style={{
+        overlay: {
+          backgroundColor: "rgba(0,0,0,0.2)",
+          zIndex: 999,
+        },
+      }}
+      appElement={document.getElementById("root")}
+      className="model-box">
+        <ViewTravelStory storyInfo={openViewModal.data || null}
+        onClose={()=> {
+          setOpenViewModal((prevState) => ({...prevState,isShown: false}));
+        }}
+        onEditClick={()=> {
+          setOpenViewModal((prevState) => ({...prevState,isShown: false}));
+          handleEdit(openViewModal.data || null);
+        }}
+        onDeleteClick={()=> {
+          deleteTravelStory(openViewModal.data || null);
+        }}></ViewTravelStory>
+      </Modal>
+
+      <button className='w-16 h-16 flex items-center justify-center rounded-full bg-cyan-800 hover:bg-cyan-400 fixed right-10 bottom-10' onClick={() => {
+        setOpenAddEditModal({isShown: true, type: "add", data: null});
+      }}>
+        <MdAdd className="text-[32px] text-white"></MdAdd>
+      </button>
+      <ToastContainer></ToastContainer>
+    </>
+  )
+}
+
+export default Home
