@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosinstance';
 import { FaEnvelope } from 'react-icons/fa';
+import bgLogin from "../assets/images/bg-login.jpg";
+
+const loginStyle = {
+  backgroundImage: `url(${bgLogin})`,
+};
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -40,7 +45,7 @@ const Login = () => {
   };
 
   return (
-    <div className='h-screen flex items-center justify-center bg-cover bg-center' style={{ backgroundImage: "url('/src/assets/images/bg-login.jpg')" }}>
+    <div className='h-screen flex items-center justify-center bg-cover bg-center' style={loginStyle}>
       <div className='w-full h-screen flex items-center px-20'>
         <div className='w-1/2 text-white'>
           <h2 className='text-5xl font-bold mb-4'>Welcome Back</h2>
