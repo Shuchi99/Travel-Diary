@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosinstance';
 import { FaEnvelope } from 'react-icons/fa';
-import bgLogin from "../assets/images/bg-login.jpg";
+import bgLogin from "../../assets/images/bg-login.jpg";
 
 const loginStyle = {
   backgroundImage: `url(${bgLogin})`,
