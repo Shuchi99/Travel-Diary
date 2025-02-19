@@ -20,6 +20,16 @@ const app = express();
 app.use(express.json());
 app.use(cors({origin: "*"}));
 
+app.get("/cron-job", async (req, res) => {
+    try {
+        console.log("Cron job triggered successfully!");
+        res.status(200).json({ message: "Cron job executed successfully!" });
+    } catch (error) {
+        console.error("Error executing cron job:", error);
+        res.status(500).json({ error: "Failed to execute cron job." });
+    }
+});
+
 app.post("/create-account",async (req, res) => {
     const {fullName, email, password}=req.body;
 
