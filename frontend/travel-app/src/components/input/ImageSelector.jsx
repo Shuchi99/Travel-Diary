@@ -9,15 +9,22 @@ const ImageSelector = ({image, setImage, handleDeleteImg}) => {
         const file = event.target.files[0];
         if (file){
             setImage(file);
+            const newPreviewUrl = URL.createObjectURL(file);
+            setPreviewUrl(newPreviewUrl);
         }
     };
 
     const onChooseFile = () => {
+        inputRef.current.value = "";
         inputRef.current.click();
     };
 
     const handleRemoveImage = () =>{
+        if (previewUrl) {
+            URL.revokeObjectURL(previewUrl);
+        }
         setImage(null);
+        setPreviewUrl(null);
         handleDeleteImg();
     };
 
@@ -27,16 +34,19 @@ const ImageSelector = ({image, setImage, handleDeleteImg}) => {
             setPreviewUrl(image);
         }
         else if (image) {
-            setPreviewUrl(URL.createObjectURL(image));
+            // setPreviewUrl(URL.createObjectURL(image));
+            const newPreviewUrl = URL.createObjectURL(image);
+            setPreviewUrl(newPreviewUrl);
+            return () => URL.revokeObjectURL(newPreviewUrl);
         }
         else{
             setPreviewUrl(null);
         }
-        return ()=>{
-            if (previewUrl && typeof previewUrl ==='string' && !image){
-                URL.revokeObjectURL(previewUrl);
-            }
-        }
+        // return ()=>{
+        //     if (previewUrl && typeof previewUrl ==='string' && !image){
+        //         URL.revokeObjectURL(previewUrl);
+        //     }
+        // }
 
     },[image])
   return (
