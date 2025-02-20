@@ -4,6 +4,11 @@ import {useNavigate} from 'react-router-dom'
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosinstance';
 import { FaEnvelope } from 'react-icons/fa6';
+import bgSignup from "../../assets/images/bg-signup.jpg";
+
+const loginStyle = {
+  backgroundImage: `url(${bgSignup})`,
+};
 const SignUp = () => {
 
   const [name,setName] = useState("");
@@ -51,7 +56,7 @@ const SignUp = () => {
   };
   
   return (
-    <div className='h-screen flex items-center justify-center bg-cover bg-center px-5 lg:px-20' style={{ backgroundImage: "url('/src/assets/images/bg-signup.jpg')" }}>
+    <div className='h-screen flex items-center justify-center bg-cover bg-center px-5 lg:px-20' style={loginStyle}>
       <div className='w-full lg:w-1/2 text-white text-center lg:text-left mb-6 lg:mb-0'>
         <h2 className='text-4xl lg:text-5xl font-bold mb-4'>Start Creating Your Travel Diary</h2>
         <p className='text-lg font-semibold'>Create an account to get started.</p>
