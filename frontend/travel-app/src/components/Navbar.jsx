@@ -25,15 +25,16 @@ const Navbar = ({userInfo, searchQuery, setSearchQuery,onSearchNote,handleClearS
     };
 
   return (
-    <div className='bg-white flex items-center justify-between px-6 py-2 drop-shadow sticky top-0 z-10'>
-      <img src={LOGO} alt="travel diary" className='h-15'></img>
+    <div className='bg-white flex flex-wrap items-center justify-between px-4 py-2 drop-shadow sticky top-0 z-10'>
+      <img src={LOGO} alt="travel diary" className='h-10 w-auto'></img>
       { isToken && <> 
-
+        <div className="flex-1 flex justify-center mx-2">
       <SearchBar value={searchQuery} onChange={({target}) => {
         setSearchQuery(target.value);
       }}
       handleSearch={handleSearch}
       onClearSearch={onClearSearch}></SearchBar>
+      </div>
       <ProfileInfo userInfo={userInfo} onLogout={onLogout}></ProfileInfo>{" "} 
       </>}
     </div>

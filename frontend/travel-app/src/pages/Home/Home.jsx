@@ -143,101 +143,104 @@ const Home = () => {
 
   return (
     <>
-      <Navbar userInfo={userInfo} searchQuery={searchQuery}
-      setSearchQuery={setSearchQuery}
-      onSearchNote={onSearchStory}
-      handleClearSearch={handleClearSearch}></Navbar>
+      <Navbar 
+        userInfo={userInfo} 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSearchNote={onSearchStory}
+        handleClearSearch={handleClearSearch}
+      />
 
       <div className='container mx-auto py-10'>
-        <FilterInfoTitle filterType={filterType}
-        filterDates={dateRange}
-        onClear={()=> {
-          resetFilter();
-        }}>
-        </FilterInfoTitle>
-        <div className='flex gap-7'>
-          <div className='flex-1'>
-          {allStories.length > 0 ? (<div className='grid grid-cols-2 gap-4'>
-            {allStories.map((item)=>{
-              return (
-                <TravelCard key={item._id}
-                imageUrl={item.imageUrl}
-                title={item.title}
-                details={item.details}
-                date={item.dateVisited}
-                locationsVisited={item.locationsVisited}
-                onClick={() => handleViewStory(item)}></TravelCard>
-              )
-            })}
-          </div>):(
-            <EmptyCard imgSrc={getEmptyCardImg(filterType)} 
-            message={getEmptyCardMessage(filterType)}/>
-          )}
-          </div>
-          <div className='w-[350px]'>
-            <div className='bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg'>
-              <div className='p-3'>
-                <DayPicker captionLayout='dropdown-buttons'
+        <FilterInfoTitle 
+          filterType={filterType}
+          filterDates={dateRange}
+          onClear={() => { resetFilter(); }}
+        />
+
+        {/* Responsive layout */}
+        <div className='flex flex-col md:flex-row gap-7'>
+
+          {/* Calendar moves to the top on mobile */}
+          <div className='w-full md:w-[300px] order-1 md:order-2'>
+            <div className='bg-white border border-slate-200 shadow-lg shadow-slate-200/60 rounded-lg p-1'>
+              <DayPicker 
+                captionLayout='dropdown-buttons'
                 mode="range"
                 selected={dateRange}
                 onSelect={handleDayClick}
-                pagedNavigation>
-                </DayPicker>
-              </div>
+                pagedNavigation
+              />
             </div>
           </div>
+
+          <div className='flex-1 order-2 md:order-1'>
+            {allStories.length > 0 ? (
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                {allStories.map((item) => (
+                  <TravelCard
+                    key={item._id}
+                    imageUrl={item.imageUrl}
+                    title={item.title}
+                    details={item.details}
+                    date={item.dateVisited}
+                    locationsVisited={item.locationsVisited}
+                    onClick={() => handleViewStory(item)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyCard 
+                imgSrc={getEmptyCardImg(filterType)} 
+                message={getEmptyCardMessage(filterType)}
+              />
+            )}
+          </div>
+          
         </div>
       </div>
 
       <Modal isOpen={openAddEditModal.isShown}
-      onRequestClose={()=>{}}
-      style={{
-        overlay: {
-          backgroundColor: "rgba(0,0,0,0.2)",
-          zIndex: 999,
-        },
-      }}
-      appElement={document.getElementById("root")}
-      className="model-box">
-        <AddEditTravelStory type={openAddEditModal.type}
-        storyInfo={openAddEditModal.data}
-        onClose={()=>{
-          setOpenAddEditModal({ isShown: false, type: "add", data: null});
-        }}
-        getAllTravelStories={getAllTravelStories}></AddEditTravelStory>
+        onRequestClose={() => {}}
+        style={{ overlay: { backgroundColor: "rgba(0,0,0,0.2)", zIndex: 999 }}}
+        appElement={document.getElementById("root")}
+        className="model-box"
+      >
+        <AddEditTravelStory 
+          type={openAddEditModal.type}
+          storyInfo={openAddEditModal.data}
+          onClose={() => {
+            setOpenAddEditModal({ isShown: false, type: "add", data: null });
+          }}
+          getAllTravelStories={getAllTravelStories}
+        />
       </Modal>
 
       <Modal isOpen={openViewModal.isShown}
-      onRequestClose={()=>{}}
-      style={{
-        overlay: {
-          backgroundColor: "rgba(0,0,0,0.2)",
-          zIndex: 999,
-        },
-      }}
-      appElement={document.getElementById("root")}
-      className="model-box">
-        <ViewTravelStory storyInfo={openViewModal.data || null}
-        onClose={()=> {
-          setOpenViewModal((prevState) => ({...prevState,isShown: false}));
-        }}
-        onEditClick={()=> {
-          setOpenViewModal((prevState) => ({...prevState,isShown: false}));
-          handleEdit(openViewModal.data || null);
-        }}
-        onDeleteClick={()=> {
-          deleteTravelStory(openViewModal.data || null);
-        }}></ViewTravelStory>
+        onRequestClose={() => {}}
+        style={{ overlay: { backgroundColor: "rgba(0,0,0,0.2)", zIndex: 999 }}}
+        appElement={document.getElementById("root")}
+        className="model-box"
+      >
+        <ViewTravelStory 
+          storyInfo={openViewModal.data || null}
+          onClose={() => setOpenViewModal((prevState) => ({...prevState, isShown: false}))}
+          onEditClick={() => {
+            setOpenViewModal((prevState) => ({...prevState, isShown: false}));
+            handleEdit(openViewModal.data || null);
+          }}
+          onDeleteClick={() => deleteTravelStory(openViewModal.data || null)}
+        />
       </Modal>
 
-      <button className='w-16 h-16 flex items-center justify-center rounded-full bg-cyan-800 hover:bg-cyan-400 fixed right-10 bottom-10' onClick={() => {
-        setOpenAddEditModal({isShown: true, type: "add", data: null});
-      }}>
-        <MdAdd className="text-[32px] text-white"></MdAdd>
+      <button className='w-16 h-16 flex items-center justify-center rounded-full bg-cyan-800 hover:bg-cyan-400 fixed right-10 bottom-10' 
+        onClick={() => { setOpenAddEditModal({isShown: true, type: "add", data: null}); }}>
+        <MdAdd className="text-[32px] text-white" />
       </button>
-      <ToastContainer></ToastContainer>
+
+      <ToastContainer />
     </>
   )
 }
 
-export default Home
+export default Home;

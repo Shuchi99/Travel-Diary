@@ -145,12 +145,12 @@ const AddEditTravelStory = ({storyInfo,
                     <MdAdd className='text-lg'></MdAdd>
                     ADD STORY
                 </button>) : (<>
-                <button className='btn-small' onClick={handleAddOrUpdateClick}>
+                <button className='btn-small cursor-pointer' onClick={handleAddOrUpdateClick}>
                     <MdUpdate className='text-lg'></MdUpdate> UPDATE STORY
                 </button>
                 </>)}
 
-                <button className='btn-small btn-delete' onClick={onClose}>
+                <button className='btn-small btn-delete cursor-pointer' onClick={onClose}>
                     <MdDeleteOutline className='text-lg'></MdDeleteOutline>DELETE
                 </button>
                 <button className='' onClick={onClose}>

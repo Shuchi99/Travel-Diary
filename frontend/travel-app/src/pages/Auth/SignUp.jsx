@@ -49,53 +49,32 @@ const SignUp = () => {
           }
     }
   };
+  
   return (
-    <div className='h-screen flex items-center justify-center bg-cover bg-center' style={{ backgroundImage: "url('/src/assets/images/bg-signup.jpg')" }}>
-      <div className='w-full h-screen flex items-center px-20'>
-        <div className='w-1/2 text-white'>
-        <div>
-            <h4 className="text-5xl text-white font-semibold leading-[58px]">
-                Start creating Your <br/> Travel Diary
-            </h4>
-            <p className="text-[25px] text-white leading-6 pr-7 nt-4">
-                Create an account to get started.
-            </p>
-        </div>
-        </div>
-        <div className='w-1/2 bg-white p-10 rounded-lg shadow-lg relative overflow-hidden' style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(230,230,230,0.8) 100%)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.5)" }}>
-            <form onSubmit={handleSignUp}>
-                <h4 className="text-2xl font-semibold mb-7">Sign Up</h4>
-
-                <input type="text" placeholder="Full Name" className="input-box" value={name}
-                onChange={({target}) => {
-                  setName(target.value);
-                }}></input>
-
-                <div className='relative mb-4'>
-                <FaEnvelope className='absolute left-3 top-3 text-gray-400' />
-                <input type="text" placeholder="Email" className="input-box pl-10" value={email}
-                onChange={({target}) => {
-                  setEmail(target.value);
-                }}></input></div>
-                
-                <PasswordInput value={password}
-                 onChange={({target}) => {
-                  setPassword(target.value);
-                }}/>
-
-                {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
-                <button type="submit" className="btn-primary">CREATE ACCOUNT</button>
-                <p className='text-xs text-slate-500 text-center my-4'>Or</p>
-                <button type="submit" className="btn-primary btn-light" onClick={()=>{
-                    navigate("/login");
-                }}>
-                    LOGIN
-                </button>
-            </form>
-        </div>
+    <div className='h-screen flex items-center justify-center bg-cover bg-center px-5 lg:px-20' style={{ backgroundImage: "url('/src/assets/images/bg-signup.jpg')" }}>
+      <div className='w-full lg:w-1/2 text-white text-center lg:text-left mb-6 lg:mb-0'>
+        <h2 className='text-4xl lg:text-5xl font-bold mb-4'>Start Creating Your Travel Diary</h2>
+        <p className='text-lg font-semibold'>Create an account to get started.</p>
+      </div>
+      <div className='w-full max-w-md lg:w-1/2 bg-white p-6 lg:p-10 rounded-lg shadow-lg relative overflow-hidden' style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(230,230,230,0.9) 100%)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.5)" }}>
+        <h2 className='text-2xl font-semibold text-center mb-6 text-gray-700 relative z-10'>Sign Up</h2>
+        <form onSubmit={handleSignUp} className='relative z-10'>
+          <input type='text' placeholder='Full Name' className='input-box w-full mb-4' value={name} onChange={({ target }) => setName(target.value)} />
+          <div className='relative mb-4'>
+            <FaEnvelope className='absolute left-3 top-3 text-gray-400' />
+            <input type='text' placeholder='Email Address' className='input-box pl-10 w-full' value={email} onChange={({ target }) => setEmail(target.value)} />
+          </div>
+          <PasswordInput value={password} onChange={({ target }) => setPassword(target.value)} />
+          {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
+          <button type='submit' className='btn-primary w-full cursor-pointer'>CREATE ACCOUNT</button>
+          <p className='text-xs text-slate-500 text-center my-4'>Or</p>
+          <button type='button' className='btn-primary btn-light w-full cursor-pointer' onClick={() => navigate('/login')}>
+            LOGIN
+          </button>
+        </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;

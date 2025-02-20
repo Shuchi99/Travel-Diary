@@ -9,11 +9,11 @@ const ViewTravelStory = ({storyInfo, onClose,onEditClick,onDeleteClick}) => {
     <div className='flex items-center justify-end'>
     <div>
     <div className='flex items-center gap-3 bg-cyan-50/50 p-2 rounded-l-lg'>
-                <button className='btn-small' onClick={onEditClick}>
+                <button className='btn-small cursor-pointer' onClick={onEditClick}>
                     <MdUpdate className='text-lg'></MdUpdate> UPDATE STORY
                 </button>
 
-                <button className='btn-small btn-delete' onClick={onDeleteClick}>
+                <button className='btn-small btn-delete cursor-pointer' onClick={onDeleteClick}>
                     <MdDeleteOutline className='text-lg'></MdDeleteOutline> Delete
                 </button>
             
