@@ -12,13 +12,15 @@ const fs = require("fs");
 const path = require("path");
 const {authenticateToken} = require("./utilities");
 const { error } = require("console");
+const { indexLocation } = require("./services/elasticsearchService");
+const cloudinary = require("./services/cloudinary");
 
-// mongoose.connect(config.connectionString);
 mongoose.connect(process.env.CONNECTION_STRING);
 
 const app = express();
 app.use(express.json());
 app.use(cors({origin: "*"}));
+app.use('/api', require('./routes/location'));
 
 app.get("/cron-job", async (req, res) => {
     try {
@@ -124,6 +126,11 @@ app.post("/add-travel", authenticateToken, async (req, res) => {
         });
     
         await travel.save();
+
+        for (const loc of locationsVisited) {
+            await indexLocation(loc);
+        }
+
         res.status(201).json({details: travel, message: "Added Successfully"});
     } catch(error){
         res.status(400).json({error: true, message: error.message});
@@ -142,17 +149,18 @@ app.get("/get-all-travels", authenticateToken, async (req, res) => {
 });
 
 app.post("/image-upload", upload.single("image"), async (req, res) => {
-    try{
-        if (!req.file){
-            return res.status(400).json({error: true, message: "Please Upload an Image"});
-        }
+  try {
+    console.log("FILE:", req.file);
 
-        const imageUrl = `https://travel-diary-backend-xgx6.onrender.com/uploads/${req.file.filename}`;
-        res.status(200).json({imageUrl});
-    } catch(error){
-        res.status(500).json({error: true, message: error.message});
-    }
+    if (!req.file) throw new Error("No file uploaded");
+
+    return res.status(200).json({ imageUrl: req.file.path });
+  } catch (error) {
+    console.error("UPLOAD ERROR:", error);
+    res.status(500).json({ error: true, message: error.message });
+  }
 });
+
 
 app.delete("/delete-image",async(req, res) => {
     const {imageUrl} = req.query;
@@ -192,7 +200,7 @@ app.put("/edit-travel/:id",authenticateToken,async(req, res) => {
         if(!travel){
             return res.status(404).json({error: true, message: "Travel data not found"});
         }
-        const placeholderImgUrl = `https://travel-diary-backend-xgx6.onrender.com/assets/placeholder.jpg`;
+        const placeholderImgUrl = `https://res.cloudinary.com/djmzr4hqb/image/upload/v1756764578/travel_diary_uploads/vcmdy57dyafpt6akdhhs.jpg`;
         travel.title = title;
         travel.details = details;
         travel.locationsVisited = locationsVisited;
@@ -200,6 +208,11 @@ app.put("/edit-travel/:id",authenticateToken,async(req, res) => {
         travel.dateVisited = dateVisited;
 
         await travel.save();
+
+        for (const loc of locationsVisited) {
+            await indexLocation(loc);
+        }
+
         res.status(200).json({ details: travel, message:"update Successful"});
     } catch(error){
         res.status(500).json({error: true, message: error.message});
@@ -276,8 +289,6 @@ app.get("/travel/filter",authenticateToken, async(req, res) => {
     }
 });
 
-app.use("/uploads", express.static(path.join(__dirname,"uploads")));
-app.use("/assets", express.static(path.join(__dirname,"assets")));
 
 app.listen(8000);
 module.exports = app;

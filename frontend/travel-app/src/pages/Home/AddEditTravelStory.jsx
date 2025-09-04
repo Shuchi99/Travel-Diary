@@ -23,9 +23,11 @@ const AddEditTravelStory = ({storyInfo,
   const addNewTravelStory = async () => {
     try{
       let imageUrl = "";
-      if(storyImg){
+      if(storyImg instanceof File){
         const imageUploadRes = await uploadImage(storyImg);
         imageUrl = imageUploadRes.imageUrl || "";
+      } else if (typeof storyImg === "string") {
+        imageUrl=storyImg;
       }
 
       const response = await axiosInstance.post("/add-travel",{
